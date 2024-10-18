@@ -107,3 +107,34 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                             _______, _______, _______,         _______, _______, _______
     )
 };
+
+void pointing_device_init_user(void) {
+    set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
+}
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    uint8_t layer = get_highest_layer(layer_state|default_layer_state);
+
+    for (uint8_t i = led_min; i < led_max; i++) {
+        // Set color based on active layer
+        switch (layer) {
+            case 0:
+                rgb_matrix_set_color(i, RGB_BLUE);
+                break;
+            case 1:
+                rgb_matrix_set_color(i, RGB_GREEN);
+                break;
+            default:
+                // Set a default color or handle additional layers
+                rgb_matrix_set_color(i, RGB_WHITE);
+                break;
+        }
+
+        // Override color if Caps Lock is active
+        if (host_keyboard_led_state().caps_lock) {
+            rgb_matrix_set_color(i, RGB_RED);
+            break;
+        }
+    }
+    return false;
+}
