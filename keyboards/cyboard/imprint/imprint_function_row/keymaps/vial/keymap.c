@@ -108,8 +108,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     )
 };
 
-void pointing_device_init_user(void) {
-    set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
+// void pointing_device_init_user(void) {
+//     set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
+// }
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    // checks highest layer other than target layer
+    switch(get_highest_layer(remove_auto_mouse_layer(state, true))) {
+        case 2:
+            // remove_auto_mouse_target must be called to adjust state *before* setting enable
+            state = remove_auto_mouse_layer(state, false);
+            set_auto_mouse_enable(false);
+            break;
+        default:
+            set_auto_mouse_enable(true);
+            break;
+    }
+    // recommend that any code that makes adjustment based on auto mouse layer state would go here
+    return state;
 }
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
@@ -120,18 +136,19 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         switch (layer) {
             case 0:
                 // Override color if Caps Lock is active
-                if (host_keyboard_led_state().caps_lock) {
-                    rgb_matrix_set_color(i, RGB_RED);
-                } else {
+                //if (host_keyboard_led_state().caps_lock) {
+                //    rgb_matrix_set_color(i, RGB_RED);
+                //} else {
                     rgb_matrix_set_color(i, RGB_BLUE);
-                }
+                //}
                 break;
             case 1:
                 rgb_matrix_set_color(i, RGB_GREEN);
                 break;
+            case 2:
+                rgb_matrix_set_color(i, RGB_GOLDENROD);
+                break;    
             default:
-                // Set a default color or handle additional layers
-                rgb_matrix_set_color(i, RGB_WHITE);
                 break;
         }
     }
