@@ -108,25 +108,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     )
 };
 
-// void pointing_device_init_user(void) {
-//     set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
-// }
-
-layer_state_t layer_state_set_user(layer_state_t state) {
-    // checks highest layer other than target layer
-    switch(get_highest_layer(remove_auto_mouse_layer(state, true))) {
-        case 2:
-            // remove_auto_mouse_target must be called to adjust state *before* setting enable
-            state = remove_auto_mouse_layer(state, false);
-            set_auto_mouse_enable(false);
-            break;
-        default:
-            set_auto_mouse_enable(true);
-            break;
-    }
-    // recommend that any code that makes adjustment based on auto mouse layer state would go here
-    return state;
+void keyboard_post_init_user(void) {
+    // Simulate the USER07 key to activate scroll on left ball
+    tap_code16(QK_USER_7);
 }
+
+void pointing_device_init_user(void) {
+    set_auto_mouse_enable(true);         // always required before the auto mouse feature will work
+}
+
+
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t layer = get_highest_layer(layer_state|default_layer_state);
@@ -147,7 +138,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 break;
             case 2:
                 rgb_matrix_set_color(i, RGB_GOLDENROD);
-                break;    
+                break;
             default:
                 break;
         }
